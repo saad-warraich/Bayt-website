@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch Me If You Can</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        .box {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background-color: #eaeaea;
+            border: 2px solid #007BFF;
+            overflow: hidden;
+        }
+
+        #moveButton {
+            position: absolute;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <button id="moveButton">Catch me if you can</button>
+    </div>
+
+    <script>
+        const button = document.getElementById('moveButton');
+        const box = document.querySelector('.box');
+        const movementDistance = 200; // Distance the button moves
+
+        // Set initial random position for the button inside the box
+        function setRandomPosition() {
+            button.style.left = `${Math.random() * (box.clientWidth - button.offsetWidth)}px`;
+            button.style.top = `${Math.random() * (box.clientHeight - button.offsetHeight)}px`;
+        }
+
+        setRandomPosition(); // Initial random position
+
+        box.addEventListener('mousemove', (e) => {
+            const buttonRect = button.getBoundingClientRect();
+            const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+            const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+
+            // Calculate the distance between the cursor and the button's center
+            const distanceX = Math.abs(e.clientX - buttonCenterX);
+            const distanceY = Math.abs(e.clientY - buttonCenterY);
+
+            // If the cursor gets too close, move the button
+            if (distanceX < 100 && distanceY < 100) {
+                let offsetX = (e.clientX < buttonCenterX ? 2 : -2) * movementDistance;
+                let offsetY = (e.clientY < buttonCenterY ? 2 : -2) * movementDistance;
+
+                // Calculate new position
+                let newX = button.offsetLeft + offsetX;
+                let newY = button.offsetTop + offsetY;
+
+                // Make the button bounce off the borders
+                if (newX < 0) newX = 3;
+                if (newX > box.clientWidth - button.offsetWidth) newX = box.clientWidth - button.offsetWidth;
+                if (newY < 0) newY = 3;
+                if (newY > box.clientHeight - button.offsetHeight) newY = box.clientHeight - button.offsetHeight;
+
+                // Move the button to the new position
+                button.style.left = `${newX}px`;
+                button.style.top = `${newY}px`;
+            }
+        });
+
+        // Make the button occasionally jump to a random location
+        function randomJump() {
+            setRandomPosition(); // Set button to a new random position
+        }
+
+        // Button jumps every 3-6 seconds
+        setInterval(randomJump, Math.random() * 3000 + 3000);
+
+        // Handle window resizing to adjust button boundaries
+        window.addEventListener('resize', () => {
+            const currentLeft = parseFloat(button.style.left);
+            const currentTop = parseFloat(button.style.top);
+
+            // Ensure the button stays within the box when resizing
+            if (currentLeft > box.clientWidth - button.offsetWidth) {
+                button.style.left = `${box.clientWidth - button.offsetWidth}px`;
+            }
+
+            if (currentTop > box.clientHeight - button.offsetHeight) {
+                button.style.top = `${box.clientHeight - button.offsetHeight}px`;
+            }
+        });
+    </script>
+</body>
+</html>
